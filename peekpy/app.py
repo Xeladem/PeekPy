@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import redis
 from flask import Flask, render_template
 
 from .api import api
@@ -8,6 +9,7 @@ from .website import website
 
 from .utils import INSTANCE_FOLDER_PATH
 from .config import DefaultConfig
+from .logger import logger
 
 # For import *
 __all__ = ['init_app']
@@ -20,7 +22,7 @@ DEFAULT_BLUEPRINTS = (
 
 
 def init_app(config=None, app_name=None, blueprints=None):
-    """ Initiate the peekpy app """
+    """Initiate the peekpy app"""
     if app_name is None:
         app_name = DefaultConfig.PROJECT
     if blueprints is None:
@@ -39,11 +41,14 @@ def init_app(config=None, app_name=None, blueprints=None):
     #Initiate the error handlers
     init_error_handlers(app)
 
+    #Init and test the redis database
+    init_redis_db(app, config)
+
     return app
 
 
 def init_config(app, config):
-    """ Load the Flask app config """
+    """Load the Flask app config"""
     #Load the default configuration
     app.config.from_object(DefaultConfig)
 
@@ -58,7 +63,7 @@ def init_config(app, config):
 
 
 def init_error_handlers(app):
-    """ Init the various error handlers"""
+    """Init the various error handlers"""
 
     @app.errorhandler(403)
     def forbidden_page(error):
@@ -74,7 +79,27 @@ def init_error_handlers(app):
 
 
 def register_blueprints(app, blueprints):
-    """ Register the blueprints in the Flask app object"""
+    """Register the blueprints in the Flask app object"""
 
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+
+def init_logger(app):
+    """Init the logger"""
+    app.config['logger'] = logger
+
+
+def init_redis_db(app, config):
+    """Load and test the redis database"""
+    try:
+        #Try to connect to redis
+        rs = redis.StrictRedis(host='localhost', port=6379, db=0)
+        rs.client_list()
+
+        #TODO: replace the redis server by the redis service
+        #If succeed the redis server is store in the app config dict
+        app.config['redis'] = rs
+
+    except redis.ConnectionError:
+        logger.fatal("Redis server connection failed")
