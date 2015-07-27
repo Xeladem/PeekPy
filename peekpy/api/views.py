@@ -18,11 +18,16 @@ def handle_invalid_usage(error):
 
 class FolderAPI(MethodView):
 
-    def get(self):
+    def get(self, folder_id):
         return "<h1> GET method</h1>"
 
-    def post(self):
+    def post(self, folder_id):
         return "<h1> POST method</h1>"
 
 #Register the method view
-api.add_url_rule('/f/', view_func=FolderAPI.as_view('folder'))
+folder_view = FolderAPI.as_view('folder')
+api.add_url_rule('/f/', view_func=folder_view,
+                        methods=['GET'],
+                        defaults={'folder_id': None})
+api.add_url_rule('/f/<string:folder_id>', view_func=folder_view,
+                                       methods=['GET', 'POST'])
