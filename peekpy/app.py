@@ -10,6 +10,10 @@ from .website import website
 from .utils import INSTANCE_FOLDER_PATH
 from .config import DefaultConfig
 from .logger import logger
+from .redis_service import RedisService
+
+from .exception import RedisServiceException
+
 
 # For import *
 __all__ = ['init_app']
@@ -105,14 +109,18 @@ def init_redis_db(app, config):
         redis_host = config.REDIS_HOST
         redis_port = config.REDIS_PORT
 
-        rs = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
-        rs.client_list()
+        r_server = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
+        r_server.client_list()
 
         app.config['logger'].info("Redis connection established")
 
-        #TODO: replace the redis server by the redis service
+        #Initiate the redis service
+        r_service = RedisService(r_server)
+
         #If succeed the redis server is store in the app config dict
-        app.redis = rs
+        app.config['REDIS_S'] = r_service
 
     except redis.ConnectionError:
         app.config['logger'].fatal("Redis server connection failed")
+    except RedisServiceException as e:
+        app.config['logger'].fatal(e)
