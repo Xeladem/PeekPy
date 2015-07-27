@@ -23,8 +23,10 @@ DEFAULT_BLUEPRINTS = (
 
 def init_app(config=None, app_name=None, blueprints=None):
     """Initiate the peekpy app"""
+    if config is None:
+        config = DefaultConfig
     if app_name is None:
-        app_name = DefaultConfig.PROJECT
+        app_name = config.PROJECT
     if blueprints is None:
         blueprints = DEFAULT_BLUEPRINTS
 
@@ -50,7 +52,7 @@ def init_app(config=None, app_name=None, blueprints=None):
 def init_config(app, config):
     """Load the Flask app config"""
     #Load the default configuration
-    app.config.from_object(DefaultConfig)
+    app.config.from_object(config)
 
     #Load from a cfg file in the instance folder
     app.config.from_pyfile('production.cfg', silent=True)
@@ -94,7 +96,10 @@ def init_redis_db(app, config):
     """Load and test the redis database"""
     try:
         #Try to connect to redis
-        rs = redis.StrictRedis(host='localhost', port=6379, db=0)
+        redis_host = config.REDIS_HOST
+        redis_port = config.REDIS_PORT
+
+        rs = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
         rs.client_list()
 
         #TODO: replace the redis server by the redis service
