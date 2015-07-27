@@ -7,7 +7,7 @@ from .admin import admin
 from .website import website
 
 from .utils import INSTANCE_FOLDER_PATH
-from .config import BaseConfig
+from .config import DefaultConfig
 
 # For import *
 __all__ = ['init_app']
@@ -22,13 +22,16 @@ DEFAULT_BLUEPRINTS = (
 def init_app(config=None, app_name=None, blueprints=None):
     """ Initiate the peekpy app """
     if app_name is None:
-        app_name = BaseConfig.PROJECT
+        app_name = DefaultConfig.PROJECT
     if blueprints is None:
         blueprints = DEFAULT_BLUEPRINTS
 
     app = Flask(app_name,
                 instance_path=INSTANCE_FOLDER_PATH,
                 instance_relative_config=True)
+
+    #Load the Flask app config
+    init_config(app, config)
 
     #Register the blueprints
     register_blueprints(app, blueprints)
@@ -42,7 +45,13 @@ def init_app(config=None, app_name=None, blueprints=None):
 def init_config(app, config):
     """ Load the Flask app config """
     #Load the default configuration
-    app.config.from_object(BaseConfig)
+    app.config.from_object(DefaultConfig)
+
+    #Load from a cfg file in the instance folder
+    app.config.from_pyfile('production.cfg', silent=True)
+
+    #Load from the config file from an envar
+    #app.config.from_envvar(app.name.upper() + '_SETTINGS')
 
     if config:
         app.config.from_object(config)
