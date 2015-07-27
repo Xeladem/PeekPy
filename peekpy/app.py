@@ -87,7 +87,7 @@ def register_blueprints(app, blueprints):
 
 def init_logger(app):
     """Init the logger"""
-    app.config['logger'] = logger
+    app.logger = logger
 
 
 def init_redis_db(app, config):
@@ -99,7 +99,7 @@ def init_redis_db(app, config):
 
         #TODO: replace the redis server by the redis service
         #If succeed the redis server is store in the app config dict
-        app.config['redis'] = rs
+        app.redis = rs
 
     except redis.ConnectionError:
         logger.fatal("Redis server connection failed")

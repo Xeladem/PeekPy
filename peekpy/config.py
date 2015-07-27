@@ -7,7 +7,7 @@ from .utils import INSTANCE_FOLDER_PATH
 
 class BaseConfig(object):
 
-    PROJECT = "PeekPy"
+    PROJECT = "peekpy"
     PROJECT_ROOT = path(__file__).parent.parent.abspath()
 
     DEBUG = False

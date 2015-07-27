@@ -2,10 +2,10 @@
 
 from flask import Blueprint, render_template
 
-website = Blueprint('website', __name__, url_prefix='/')
+website = Blueprint('website', __name__)
 
 
 #Register the main page
-@website.route('/', defaults={'page': 'index'})
-def show_index(page):
-    return render_template('%s.html' % page)
+@website.route('/', methods=['GET'])
+def show_index():
+    return render_template('index.html')
