@@ -34,6 +34,9 @@ def init_app(config=None, app_name=None, blueprints=None):
                 instance_path=INSTANCE_FOLDER_PATH,
                 instance_relative_config=True)
 
+    #Init the logger
+    init_logger(app)
+
     #Load the Flask app config
     init_config(app, config)
 
@@ -83,13 +86,16 @@ def init_error_handlers(app):
 def register_blueprints(app, blueprints):
     """Register the blueprints in the Flask app object"""
 
+    #Load the blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+    app.config['logger'].info("Blueprints loaded")
 
 
 def init_logger(app):
     """Init the logger"""
-    app.logger = logger
+    app.config['logger'] = logger
 
 
 def init_redis_db(app, config):
@@ -102,9 +108,11 @@ def init_redis_db(app, config):
         rs = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
         rs.client_list()
 
+        app.config['logger'].info("Redis connection established")
+
         #TODO: replace the redis server by the redis service
         #If succeed the redis server is store in the app config dict
         app.redis = rs
 
     except redis.ConnectionError:
-        logger.fatal("Redis server connection failed")
+        app.config['logger'].fatal("Redis server connection failed")
