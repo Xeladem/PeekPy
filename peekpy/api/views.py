@@ -33,6 +33,15 @@ class FolderAPI(MethodView):
     def post(self, folder_id, link_id):
         return "<h1> POST method</h1>"
 
+    def patch(self, folder_id, link_id):
+        return "<h1> PATCH method</h1>"
+
+    def put(self, folder_id, link_id):
+        return "<h1> PUT method</h1>"
+
+    def delete(self, folder_id, link_id):
+        return "<h1> DELETE method</h1>"
+
 
 class LinksAPI(MethodView):
 
@@ -44,6 +53,15 @@ class LinksAPI(MethodView):
 
     def post(self, folder_id, link_id):
         return "<h1> POST links method</h1>"
+
+    def patch(self, folder_id, link_id):
+        return "<h1> links PATCH method</h1>"
+
+    def put(self, folder_id, link_id):
+        return "<h1> links PUT method</h1>"
+
+    def delete(self, folder_id, link_id):
+        return "<h1> links DELETE method</h1>"
 
 #Register the method view
 folder_view = FolderAPI.as_view('folder')
