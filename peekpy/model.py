@@ -66,4 +66,3 @@ class Link(object):
             self.ttl = 0
         else:
             self.ttl = kwargs['ttl']
-
